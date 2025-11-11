@@ -1,14 +1,14 @@
 import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
-import { connect, Channel, Connection } from 'amqplib';
+import * as amqp from 'amqplib';
 
 @Injectable()
 export class RabbitMQService implements OnModuleInit, OnModuleDestroy {
-  private connection: Connection;
-  private channel: Channel;
+  private connection: amqp.Connection;
+  private channel: amqp.Channel;
 
   async onModuleInit() {
     try {
-      this.connection = await connect('amqp://guest:guest@rabbitmq:5672');
+      this.connection = await amqp.connect('amqp://guest:guest@rabbitmq:5672');
       this.channel = await this.connection.createChannel();
       
       // Assert exchanges and queues
@@ -30,11 +30,15 @@ export class RabbitMQService implements OnModuleInit, OnModuleDestroy {
   }
 
   async onModuleDestroy() {
-    if (this.channel) await this.channel.close();
-    if (this.connection) await this.connection.close();
+    if (this.channel) {
+      await this.channel.close();
+    }
+    if (this.connection) {
+      await this.connection.close();
+    }
   }
 
-  async sendToQueue(queue: string, message: any) {
+  async sendToQueue(queue: string, message: any): Promise<boolean> {
     try {
       const sent = this.channel.sendToQueue(
         queue,
@@ -53,7 +57,7 @@ export class RabbitMQService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  async publishToExchange(exchange: string, routingKey: string, message: any) {
+  async publishToExchange(exchange: string, routingKey: string, message: any): Promise<boolean> {
     try {
       return this.channel.publish(
         exchange,
@@ -65,5 +69,10 @@ export class RabbitMQService implements OnModuleInit, OnModuleDestroy {
       console.error('Error publishing to exchange:', error);
       throw error;
     }
+  }
+
+  // Helper method to check connection health
+  async isConnected(): Promise<boolean> {
+    return this.connection !== undefined && this.channel !== undefined;
   }
 }

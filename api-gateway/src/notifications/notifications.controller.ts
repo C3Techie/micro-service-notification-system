@@ -11,7 +11,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateNotificationDto, NotificationType } from './dto/create-notification.dto';
 import { RabbitMQService } from '../rabbitmq/rabbitmq.service';
 import { NotificationResponseDto } from './dto/notification-response.dto';
-import { ApiResponse as ApiResponseInterface } from '../common/interfaces/api-response.interface';
+import type { ApiResponse as ApiResponseInterface } from '../common/interfaces/api-response.interface';
 import { v4 as uuidv4 } from 'uuid';
 
 @ApiTags('notifications')
