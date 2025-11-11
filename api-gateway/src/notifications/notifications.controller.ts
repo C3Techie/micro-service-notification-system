@@ -12,10 +12,10 @@ import { CreateNotificationDto, NotificationType } from './dto/create-notificati
 import { RabbitMQService } from '../rabbitmq/rabbitmq.service';
 import { NotificationResponseDto } from './dto/notification-response.dto';
 import type { ApiResponse as ApiResponseInterface } from '../common/interfaces/api-response.interface';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
 
 @ApiTags('notifications')
-@Controller('api/v1/notifications')
+@Controller('notifications')
 export class NotificationsController {
   private readonly logger = new Logger(NotificationsController.name);
 
@@ -37,7 +37,7 @@ export class NotificationsController {
 
       // Route to appropriate queue
       const routingKey = createNotificationDto.notification_type;
-      const notificationId = uuidv4();
+      const notificationId = randomUUID();
       
       const message = {
         ...createNotificationDto,

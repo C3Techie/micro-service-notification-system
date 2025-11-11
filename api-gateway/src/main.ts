@@ -2,8 +2,11 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { Logger } from '@nestjs/common';
 
 async function bootstrap() {
+  const logger = new Logger('Bootstrap');
+  
   const app = await NestFactory.create(AppModule);
   
   // Global validation
@@ -30,7 +33,8 @@ async function bootstrap() {
   SwaggerModule.setup('api/docs', app, document);
   
   await app.listen(8000);
-  console.log('API Gateway running on port 8000');
-  console.log('Swagger documentation available at http://localhost:8000/api/docs');
+  logger.log('API Gateway running on port 8000');
+  logger.log('Swagger documentation available at http://localhost:8000/api/docs');
+  logger.log('Health check available at http://localhost:8000/api/v1/notifications/health');
 }
 bootstrap();

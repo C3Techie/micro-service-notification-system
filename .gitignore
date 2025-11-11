@@ -35,3 +35,21 @@ Thumbs.db
 
 # Docker
 docker-compose.override.yml
+
+# Microservices node_modules (but keep them in git for now since we're in development)
+# api-gateway/node_modules/
+# user-service/node_modules/
+# email-service/node_modules/  
+# push-service/node_modules/
+# template-service/node_modules/
+
+# Docker
+docker-compose.override.yml
+
+# Environment variables
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
