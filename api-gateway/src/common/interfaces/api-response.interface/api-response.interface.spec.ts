@@ -1,7 +1,16 @@
-import { ApiResponseInterface } from './api-response.interface';
+export interface PaginationMeta {
+  total: number;
+  limit: number;
+  page: number;
+  total_pages: number;
+  has_next: boolean;
+  has_previous: boolean;
+}
 
-describe('ApiResponseInterface', () => {
-  it('should be defined', () => {
-    expect(new ApiResponseInterface()).toBeDefined();
-  });
-});
+export interface ApiResponse<T> {
+  success: boolean;
+  data?: T;
+  error?: string;
+  message: string;
+  meta?: PaginationMeta;
+}
