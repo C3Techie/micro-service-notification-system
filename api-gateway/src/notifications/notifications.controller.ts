@@ -46,11 +46,7 @@ export class NotificationsController {
       };
 
       // Send to RabbitMQ exchange
-      const sent = await this.rabbitMQService.publishToExchange(
-        'notifications.direct',
-        routingKey,
-        message
-      );
+      const sent = await this.rabbitMQService.publishToExchange(routingKey, message);
 
       if (!sent) {
         throw new Error('Failed to queue notification');
