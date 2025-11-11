@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  # Message Queue
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"   # AMQP protocol
+      - "15672:15672" # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+  # Cache
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+  # Database
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: main
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # Services will be added step by step
+  # api-gateway:
+  # user-service:
+  # email-service: 
+  # push-service:
+  # template-service:
+
+volumes:
+  postgres_data:
