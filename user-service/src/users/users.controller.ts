@@ -17,7 +17,7 @@ import { UserResponseDto } from './dto/user-response.dto';
 import type { ApiResponse as ApiResponseInterface } from '../common/interfaces/api-response.interface';
 
 @ApiTags('users')
-@Controller('api/v1/users')
+@Controller('users')
 export class UsersController {
   private readonly logger = new Logger(UsersController.name);
 
