@@ -10,6 +10,7 @@ import {
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateNotificationDto, NotificationType } from './dto/create-notification.dto';
 import { RabbitMQService } from '../rabbitmq/rabbitmq.service';
+import { RedisService } from '../redis/redis.service';
 import { NotificationResponseDto } from './dto/notification-response.dto';
 import type { ApiResponse as ApiResponseInterface } from '../common/interfaces/api-response.interface';
 import { randomUUID } from 'crypto';
@@ -19,7 +20,10 @@ import { randomUUID } from 'crypto';
 export class NotificationsController {
   private readonly logger = new Logger(NotificationsController.name);
 
-  constructor(private readonly rabbitMQService: RabbitMQService) {}
+  constructor(
+    private readonly rabbitMQService: RabbitMQService,
+    private readonly redisService: RedisService,
+  ) {}
 
   @Post()
   @ApiOperation({ summary: 'Send a notification' })
@@ -34,6 +38,19 @@ export class NotificationsController {
 
       // Validate request (basic validation handled by class-validator)
       await this.validateNotificationRequest(createNotificationDto);
+
+      // Check for idempotency using Redis
+      const idempotencyKey = `notification:${createNotificationDto.request_id}`;
+      const existingNotification = await this.redisService.getJson<NotificationResponseDto>(idempotencyKey);
+      
+      if (existingNotification) {
+        this.logger.log(`Duplicate request detected: ${createNotificationDto.request_id}`);
+        return {
+          success: true,
+          data: existingNotification,
+          message: 'Notification already processed (idempotent)',
+        };
+      }
 
       // Route to appropriate queue
       const routingKey = createNotificationDto.notification_type;
@@ -59,6 +76,9 @@ export class NotificationsController {
         status: 'pending',
         request_id: createNotificationDto.request_id,
       };
+
+      // Store in Redis for idempotency (TTL: 24 hours)
+      await this.redisService.setJson(idempotencyKey, responseData, 86400);
 
       return {
         success: true,
