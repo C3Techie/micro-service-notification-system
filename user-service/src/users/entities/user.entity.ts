@@ -1,4 +1,3 @@
-export class UserEntity {}
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, BeforeInsert } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 
