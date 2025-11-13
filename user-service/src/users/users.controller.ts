@@ -15,6 +15,7 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserResponseDto } from './dto/user-response.dto';
 import { UpdatePreferencesDto } from './dto/update-preferences.dto';
+import { UpdatePushTokenDto } from './dto/update-push-token.dto';
 import type { ApiResponse as ApiResponseInterface } from '../common/interfaces/api-response.interface';
 
 @ApiTags('users')
@@ -148,14 +149,15 @@ export class UsersController {
   @Put(':id/push-token')
   @ApiOperation({ summary: 'Update user push token' })
   @ApiParam({ name: 'id', type: String, description: 'User UUID' })
+  @ApiBody({ type: UpdatePushTokenDto })
   @ApiResponse({ status: 200, description: 'Push token updated successfully' })
   @ApiResponse({ status: 404, description: 'User not found' })
   async updatePushToken(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body('push_token') pushToken: string,
+    @Body() updatePushTokenDto: UpdatePushTokenDto,
   ): Promise<ApiResponseInterface<UserResponseDto>> {
     try {
-      const user = await this.usersService.updatePushToken(id, pushToken);
+      const user = await this.usersService.updatePushToken(id, updatePushTokenDto.push_token);
 
       return {
         success: true,
