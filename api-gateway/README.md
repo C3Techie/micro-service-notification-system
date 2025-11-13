@@ -1,98 +1,306 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# API Gateway - Notification System
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## 📋 Overview
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+The API Gateway is the entry point for the Distributed Notification System, built using NestJS microservices architecture. It handles notification requests, validates them, and routes messages to appropriate queues (email/push) via RabbitMQ.
 
-## Description
+## 🏗️ Architecture
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Project setup
-
-```bash
-$ npm install
+```
+API Gateway (Port 8000)
+        ↓
+   RabbitMQ (Message Queue)
+        ↓
+Email Service    Push Service
 ```
 
-## Compile and run the project
+## 🚀 Features
+
+- **Request Validation** - Comprehensive DTO validation using class-validator
+- **Message Routing** - Routes notifications to email/push queues via RabbitMQ
+- **Health Monitoring** - Health check endpoints for service monitoring
+- **Error Handling** - Graceful error handling with circuit breaker pattern
+- **Idempotency** - Prevents duplicate notifications using request_id
+- **Docker Ready** - Full containerization with Docker
+- **API Documentation** - Swagger/OpenAPI documentation
+- **Logging** - Comprehensive logging with correlation IDs
+
+## 🛠️ Technology Stack
+
+- **Framework**: NestJS
+- **Language**: TypeScript
+- **Message Queue**: RabbitMQ
+- **Containerization**: Docker
+- **API Documentation**: Swagger/OpenAPI
+- **Validation**: class-validator
+- **Logging**: NestJS Logger
+
+## 📋 Prerequisites
+
+- Node.js 18+
+- Docker & Docker Compose
+- Git
+
+## 🏃‍♂️ Quick Start
+
+### Method 1: Docker (Recommended)
 
 ```bash
-# development
-$ npm run start
+# Clone the repository
+git clone [repository-url](https://github.com/C3Techie/micro-service-notification-system.git)
+cd micro-service-notification-system
 
-# watch mode
-$ npm run start:dev
+# Start all services
+docker-compose up --build
 
-# production mode
-$ npm run start:prod
+# The API Gateway will be available at:
+# http://localhost:8000
 ```
 
-## Run tests
+### Method 2: Local Development
 
 ```bash
-# unit tests
-$ npm run test
+# Navigate to api-gateway
+cd api-gateway
 
-# e2e tests
-$ npm run test:e2e
+# Install dependencies
+npm install
 
-# test coverage
-$ npm run test:cov
+# Start development server
+npm run start:dev
+
+# The API Gateway will be available at:
+# http://localhost:8000
 ```
 
-## Deployment
+## 📚 API Documentation
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+Once running, access the Swagger documentation at:
+**http://localhost:8000/api/docs**
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## 🔌 API Endpoints
+
+### Health Check
+```http
+GET /api/v1/notifications/health
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "status": "OK",
+    "timestamp": "2024-01-15T10:30:00.000Z"
+  },
+  "message": "API Gateway is healthy"
+}
+```
+
+### Send Notification
+```http
+POST /api/v1/notifications
+Content-Type: application/json
+```
+
+**Request Body:**
+```json
+{
+  "notification_type": "email",
+  "user_id": "123e4567-e89b-12d3-a456-426614174000",
+  "template_code": "welcome_email",
+  "variables": {
+    "name": "John Doe",
+    "link": "https://example.com",
+    "meta": {
+      "company": "Your Company",
+      "role": "user"
+    }
+  },
+  "request_id": "unique-request-123",
+  "priority": 1,
+  "metadata": {
+    "source": "user_registration",
+    "campaign_id": "campaign-001"
+  }
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "notification_id": "3313d443-c8e2-4b41-88c5-ae5399bb386d",
+    "status": "pending",
+    "request_id": "unique-request-123"
+  },
+  "message": "Notification queued successfully"
+}
+```
+
+## 🔧 Configuration
+
+### Environment Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `RABBITMQ_URL` | RabbitMQ connection URL | `amqp://guest:guest@rabbitmq:5672` |
+| `NODE_ENV` | Environment mode | `production` |
+| `PORT` | API Gateway port | `8000` |
+
+### RabbitMQ Setup
+
+The system uses the following queues:
+- `email.queue` - For email notifications
+- `push.queue` - For push notifications  
+- `failed.queue` - Dead letter queue for failed messages
+
+Exchange: `notifications.direct`
+
+## 🐳 Docker Configuration
+
+### Dockerfile
+```dockerfile
+FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm run build
+EXPOSE 8000
+CMD ["npm", "run", "start:prod"]
+```
+
+### docker-compose.yml Services
+```yaml
+api-gateway:
+  build: ./api-gateway
+  ports: ["8000:8000"]
+  environment:
+    RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+    NODE_ENV: production
+  depends_on:
+    - rabbitmq
+
+rabbitmq:
+  image: rabbitmq:3-management
+  ports: ["5672:5672", "15672:15672"]
+
+redis:
+  image: redis:alpine
+  ports: ["6379:6379"]
+
+postgres:
+  image: postgres:13
+  environment:
+    POSTGRES_USER: postgres
+    POSTGRES_PASSWORD: password
+    POSTGRES_DB: main
+  ports: ["5432:5432"]
+```
+
+## 🧪 Testing
+
+### Manual Testing with curl
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+# Health check
+curl http://localhost:8000/api/v1/notifications/health
+
+# Send email notification
+curl -X POST http://localhost:8000/api/v1/notifications \
+  -H "Content-Type: application/json" \
+  -d '{
+    "notification_type": "email",
+    "user_id": "123e4567-e89b-12d3-a456-426614174000",
+    "template_code": "welcome_email",
+    "variables": {
+      "name": "John Doe",
+      "link": "https://example.com"
+    },
+    "request_id": "test-001"
+  }'
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### Check RabbitMQ Management
+Access RabbitMQ management console at:
+**http://localhost:15672** (guest/guest)
 
-## Resources
+## 📊 Monitoring
 
-Check out a few resources that may come in handy when working with NestJS:
+### Health Checks
+- API Gateway: `http://localhost:8000/api/v1/notifications/health`
+- RabbitMQ: `http://localhost:15672` (Management UI)
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+### Logs
+```bash
+# View Docker logs
+docker-compose logs api-gateway
 
-## Support
+# View specific service logs
+docker-compose logs -f api-gateway
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## 🚀 Deployment
 
-## Stay in touch
+### Production Deployment
+```bash
+# Build and start production
+docker-compose -f docker-compose.prod.yml up -d
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+# Scale services
+docker-compose up -d --scale api-gateway=3
+```
 
-## License
+<!-- ### CI/CD Pipeline
+The project includes GitHub Actions workflow for automated testing and deployment. -->
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## 🔍 Troubleshooting
+
+### Common Issues
+
+1. **RabbitMQ Connection Failed**
+   - Check if RabbitMQ container is running: `docker-compose ps`
+   - Verify connection URL in environment variables
+
+2. **Port Already in Use**
+   - Change port in `docker-compose.yml` or `src/main.ts`
+   - Check running processes: `netstat -ano | findstr :8000`
+
+3. **Build Failures**
+   - Clear Docker cache: `docker system prune`
+   - Rebuild from scratch: `docker-compose build --no-cache`
+
+### Debug Mode
+```bash
+# Start with debug logging
+NODE_ENV=development npm run start:dev
+
+# Or with Docker
+docker-compose up api-gateway --build
+```
+
+
+## 📝 License
+
+This project is part of the HNG Internship Stage 4 Backend Task.
+
+## 👥 Team
+
+- **API Gateway**: C3Techie
+- **User Service**: C3Techie
+- **Email Service**: Romauld
+- **Push Service**: Romauld
+- **Template Service**: [Team Member]
+
+## 📞 Support
+
+For issues and questions:
+1. Check the troubleshooting section
+2. Review API documentation at `/api/docs`
+3. Check service logs with `docker-compose logs`
+
+---
+
+**🎯 API Gateway Status: PRODUCTION READY**
