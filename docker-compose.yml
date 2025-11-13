@@ -56,7 +56,7 @@ services:
       DATABASE_USER: postgres
       DATABASE_PASSWORD: password
       DATABASE_NAME: user_db
-      NODE_ENV: production
+      NODE_ENV: development
     depends_on:
       - postgres
     healthcheck:
