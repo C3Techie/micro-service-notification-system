@@ -10,10 +10,11 @@ import {
   Logger,
   ParseUUIDPipe 
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags, ApiParam } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags, ApiParam, ApiBody } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserResponseDto } from './dto/user-response.dto';
+import { UpdatePreferencesDto } from './dto/update-preferences.dto';
 import type { ApiResponse as ApiResponseInterface } from '../common/interfaces/api-response.interface';
 
 @ApiTags('users')
@@ -123,14 +124,15 @@ export class UsersController {
   @Put(':id/preferences')
   @ApiOperation({ summary: 'Update user notification preferences' })
   @ApiParam({ name: 'id', type: String, description: 'User UUID' })
+  @ApiBody({ type: UpdatePreferencesDto })
   @ApiResponse({ status: 200, description: 'Preferences updated successfully' })
   @ApiResponse({ status: 404, description: 'User not found' })
   async updatePreferences(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() preferences: { email: boolean; push: boolean },
+    @Body() updatePreferencesDto: UpdatePreferencesDto,
   ): Promise<ApiResponseInterface<UserResponseDto>> {
     try {
-      const user = await this.usersService.updatePreferences(id, preferences);
+      const user = await this.usersService.updatePreferences(id, updatePreferencesDto);
 
       return {
         success: true,
