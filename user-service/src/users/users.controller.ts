@@ -85,6 +85,19 @@ export class UsersController {
     }
   }
 
+  @Get('health')
+  @ApiOperation({ summary: 'User Service health check' })
+  health(): ApiResponseInterface<{ status: string; timestamp: string }> {
+    return {
+      success: true,
+      data: {
+        status: 'OK',
+        timestamp: new Date().toISOString(),
+      },
+      message: 'User Service is healthy',
+    };
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get user by ID' })
   @ApiParam({ name: 'id', type: String, description: 'User UUID' })
@@ -151,18 +164,5 @@ export class UsersController {
       this.logger.error(`Failed to update push token for user ${id}: ${error.message}`);
       throw error;
     }
-  }
-
-  @Get('health')
-  @ApiOperation({ summary: 'User Service health check' })
-  health(): ApiResponseInterface<{ status: string; timestamp: string }> {
-    return {
-      success: true,
-      data: {
-        status: 'OK',
-        timestamp: new Date().toISOString(),
-      },
-      message: 'User Service is healthy',
-    };
   }
 }
